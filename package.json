@@ -1,0 +1,33 @@
+{
+  "name": "homebridge-airmonitor",
+  "version": "0.0.1",
+  "description": "MiMultifunctionAirMonitor plugin for HomeBridge(https://github.com/nfarina/homebridge).",
+  "keywords": [
+    "homebridge-plugin",
+    "xiaomi",
+    "mi",
+    "MultifunctionAirMonitor"
+  ],
+  "author": "defensor",
+  "homepage": "https://github.com/defensor7/homebridge-airmonitor",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/defensor7/homebridge-airmonitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/defensor7/homebridge-airmonitor/issues"
+  },
+  "engines": {
+    "node": ">=7.0.0",
+    "homebridge": ">=0.4.1"
+  },
+  "dependencies": {
+    "miio": "0.14.1"
+  },
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC"
+}
