@@ -45,10 +45,17 @@ function MiMultifunctionAirMonitor(log, config) {
     this.config = config;
 
     const that = this;
-    this.device = new miio.Device({
+
+    miio.device({
         address: that.config.ip,
         token: that.config.token
-    });
+    }).then(device => {
+        that.log.debug("[MiMultifunctionAirMonitor][DEBUG] Successfully connected to device.");
+        that.device = device;
+    })
+        .catch(err => {
+            that.log.error("[MiMultifunctionAirMonitor][ERROR] Device connection error: " + err);
+        })
 }
 
 MiMultifunctionAirMonitor.prototype = {
@@ -60,22 +67,8 @@ MiMultifunctionAirMonitor.prototype = {
         const that = this;
         const services = [];
 
-        const infoService = new Service.AccessoryInformation();
-
-        that.device.call("miIO.info", []).then(result => {
-            that.log.debug("[MiMultifunctionAirMonitor][DEBUG]- getState: " + result);
-
-            infoService.setCharacteristic(Characteristic.SerialNumber, result['mac'])
-                .setCharacteristic(Characteristic.Model, result['model'])
-                .setCharacteristic(Characteristic.FirmwareRevision, result['fw_ver']);
-
-        }).catch(function (err) {
-            that.log.error("[MiMultifunctionAirMonitor][ERROR] getState Error: " + err);
-        });
-
-        infoService
+        const infoService = new Service.AccessoryInformation()
             .setCharacteristic(Characteristic.Manufacturer, "Xiaomi");
-
         services.push(infoService);
 
         const pmService = new Service.AirQualitySensor(this.config['name']);

@@ -1,6 +1,6 @@
 {
   "name": "homebridge-airmonitor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MiMultifunctionAirMonitor plugin for HomeBridge(https://github.com/nfarina/homebridge).",
   "keywords": [
     "homebridge-plugin",
@@ -22,7 +22,7 @@
     "homebridge": ">=0.4.1"
   },
   "dependencies": {
-    "miio": "0.14.1"
+    "miio": "^0.15.6"
   },
   "main": "index.js",
   "devDependencies": {},
