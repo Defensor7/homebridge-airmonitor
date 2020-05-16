@@ -26,9 +26,13 @@ npm install -g homebridge-airmonitor
     "temperatureName": "Temparature Sensor",
     "humidityName": "Humidity Sensor",    
     "ip": "192.168.1.100",
-    "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "co2SensorEnabled": true,
+    "pm25SensorEnabled": true,
+    "tvocSensorEnabled": true
 }]
 ```
+All sensors enabled by default.
 
 ## Get token
 For more information about token, please refer to [docs](https://github.com/Maxmudjon/com.xiaomi-miio/blob/master/docs/obtain_token.md).   

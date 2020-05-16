@@ -72,9 +72,18 @@ MiMultifunctionAirMonitor.prototype = {
         services.push(infoService);
 
         const pmService = new Service.AirQualitySensor(this.config['name']);
-        const pm2_5Characteristic = pmService.addCharacteristic(Characteristic.PM2_5Density);
-        const co2Characteristic = pmService.addCharacteristic(Characteristic.CarbonDioxideLevel);
-        const tvocCharacteristic = pmService.addCharacteristic(Characteristic.VOCDensity);
+
+        if (that.config.pm25SensorEnabled !== false) {
+            that.pm2_5Characteristic = pmService.addCharacteristic(Characteristic.PM2_5Density);
+        }
+
+        if (that.config.co2SensorEnabled !== false) {
+            that.co2Characteristic = pmService.addCharacteristic(Characteristic.CarbonDioxideLevel);
+        }
+
+        if (that.config.tvocSensorEnabled !== false) {
+            that.tvocCharacteristic = pmService.addCharacteristic(Characteristic.VOCDensity);
+        }
 
         pmService
             .getCharacteristic(Characteristic.AirQuality)
@@ -82,59 +91,70 @@ MiMultifunctionAirMonitor.prototype = {
                 that.device.call("get_air_data", []).then(result => {
                     that.log.debug("[MiMultifunctionAirMonitor][DEBUG] getState: " + result);
 
-                    let co2 = result['co2e'];
-                    co2Characteristic.updateValue(co2);
+                    let pm25_quality = 0;
+                    if (that.config.pm25SensorEnabled !== false) {
 
-                    let pm25 = result['pm25'];
-                    pm2_5Characteristic.updateValue(pm25);
+                        let pm25 = result['pm25'];
+                        that.pm2_5Characteristic.updateValue(pm25);
 
-                    let tvoc = result['tvoc'];
-                    tvocCharacteristic.updateValue(tvoc);
-
-                    let quality;
-
-                    if (pm25 <= 50) {
-                        quality = Characteristic.AirQuality.EXCELLENT;
-                    } else if (pm25 > 75 && pm25 <= 115) {
-                        quality = Characteristic.AirQuality.GOOD;
-                    } else if (pm25 > 115 && pm25 <= 150) {
-                        quality = Characteristic.AirQuality.FAIR;
-                    } else if (pm25 > 150 && pm25 <= 250) {
-                        quality = Characteristic.AirQuality.INFERIOR;
-                    } else if (pm25 > 250) {
-                        quality = Characteristic.AirQuality.POOR;
-                    } else {
-                        quality = Characteristic.AirQuality.POOR;
+                        if (pm25 <= 50) {
+                            pm25_quality = Characteristic.AirQuality.EXCELLENT;
+                        } else if (pm25 > 75 && pm25 <= 115) {
+                            pm25_quality = Characteristic.AirQuality.GOOD;
+                        } else if (pm25 > 115 && pm25 <= 150) {
+                            pm25_quality = Characteristic.AirQuality.FAIR;
+                        } else if (pm25 > 150 && pm25 <= 250) {
+                            pm25_quality = Characteristic.AirQuality.INFERIOR;
+                        } else if (pm25 > 250) {
+                            pm25_quality = Characteristic.AirQuality.POOR;
+                        } else {
+                            pm25_quality = Characteristic.AirQuality.UNKNOWN;
+                        }
                     }
 
-                    if (tvoc <= 0.3) {
-                        quality = Characteristic.AirQuality.EXCELLENT;
-                    } else if (tvoc > 0.3 && tvoc <= 1) {
-                        quality = Characteristic.AirQuality.GOOD;
-                    } else if (tvoc > 1 && tvoc <= 3) {
-                        quality = Characteristic.AirQuality.FAIR;
-                    } else if (tvoc > 3 && tvoc <= 9) {
-                        quality = Characteristic.AirQuality.INFERIOR;
-                    } else if (tvoc > 9) {
-                        quality = Characteristic.AirQuality.POOR;
-                    } else {
-                        quality = Characteristic.AirQuality.POOR;
+                    let tvoc_quality = 0;
+                    if (that.config.tvocSensorEnabled !== false) {
+
+                        let tvoc = result['tvoc'];
+                        that.tvocCharacteristic.updateValue(tvoc);
+
+                        if (tvoc <= 0.3) {
+                            tvoc_quality = Characteristic.AirQuality.EXCELLENT;
+                        } else if (tvoc > 0.3 && tvoc <= 1) {
+                            tvoc_quality = Characteristic.AirQuality.GOOD;
+                        } else if (tvoc > 1 && tvoc <= 3) {
+                            tvoc_quality = Characteristic.AirQuality.FAIR;
+                        } else if (tvoc > 3 && tvoc <= 9) {
+                            tvoc_quality = Characteristic.AirQuality.INFERIOR;
+                        } else if (tvoc > 9) {
+                            tvoc_quality = Characteristic.AirQuality.POOR;
+                        } else {
+                            tvoc_quality = Characteristic.AirQuality.UNKNOWN;
+                        }
                     }
 
-                    if (co2 <= 1000) {
-                        quality = Characteristic.AirQuality.EXCELLENT;
-                    } else if (co2 > 1000 && co2 <= 2000) {
-                        quality = Characteristic.AirQuality.GOOD;
-                    } else if (co2 > 2000 && co2 <= 3000) {
-                        quality = Characteristic.AirQuality.FAIR;
-                    } else if (co2 > 3000 && co2 <= 4000) {
-                        quality = Characteristic.AirQuality.INFERIOR;
-                    } else if (co2 > 4000) {
-                        quality = Characteristic.AirQuality.POOR;
-                    } else {
-                        quality = Characteristic.AirQuality.POOR;
+                    let co2_quality = 0;
+                    if (that.config.co2SensorEnabled !== false) {
+
+                        let co2 = result['co2e'];
+                        that.co2Characteristic.updateValue(co2);
+
+                        if (co2 <= 1000) {
+                            co2_quality = Characteristic.AirQuality.EXCELLENT;
+                        } else if (co2 > 1000 && co2 <= 2000) {
+                            co2_quality = Characteristic.AirQuality.GOOD;
+                        } else if (co2 > 2000 && co2 <= 3000) {
+                            co2_quality = Characteristic.AirQuality.FAIR;
+                        } else if (co2 > 3000 && co2 <= 4000) {
+                            co2_quality = Characteristic.AirQuality.INFERIOR;
+                        } else if (co2 > 4000) {
+                            co2_quality = Characteristic.AirQuality.POOR;
+                        } else {
+                            co2_quality = Characteristic.AirQuality.UNKNOWN;
+                        }
                     }
 
+                    let quality = Math.max(pm25_quality, tvoc_quality, co2_quality);
                     callback(null, quality);
 
                 }).catch(function (err) {
