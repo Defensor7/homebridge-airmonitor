@@ -22,7 +22,8 @@
     "homebridge": ">=0.4.1"
   },
   "dependencies": {
-    "miio": "^0.15.6"
+    "miio": "^0.15.6",
+    "mem": ">=4.0.0"
   },
   "main": "index.js",
   "devDependencies": {},
