@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.0.4 (2020-05-17)
+## 0.0.5 (2020-05-17)
 
 ### Bug Fixes
 * Device connect timeout caused all homebridge devices error ([ISSUE #4](https://github.com/Defensor7/homebridge-airmonitor/issues/4))
