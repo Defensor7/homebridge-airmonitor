@@ -45,6 +45,7 @@ function MiMultifunctionAirMonitor(log, config) {
     this.config = config;
 
     const that = this;
+    that.options = {"retries": 1}
 
     miio.device({
         address: that.config.ip,
@@ -88,8 +89,8 @@ MiMultifunctionAirMonitor.prototype = {
         pmService
             .getCharacteristic(Characteristic.AirQuality)
             .on('get', function (callback) {
-                that.device.call("get_air_data", []).then(result => {
-                    that.log.debug("[MiMultifunctionAirMonitor][DEBUG] getState: " + result);
+                that.device.call("get_air_data", [], that.options).then(result => {
+                    that.log.debug("[MiMultifunctionAirMonitor][DEBUG] getState: " + JSON.stringify(result));
 
                     let pm25_quality = 0;
                     if (that.config.pm25SensorEnabled !== false) {
@@ -169,8 +170,8 @@ MiMultifunctionAirMonitor.prototype = {
             .getCharacteristic(Characteristic.CurrentTemperature)
             .setProps({minValue: -273, maxValue: 200})
             .on("get", function (callback) {
-                that.device.call("get_air_data", []).then(result => {
-                    that.log.debug("[MiMultifunctionAirMonitor][DEBUG] getState: " + result);
+                that.device.call("get_air_data", [], that.options).then(result => {
+                    that.log.debug("[MiMultifunctionAirMonitor][DEBUG] getState: " + JSON.stringify(result));
 
                     let temperature = result['temperature'];
                     callback(null, temperature);
@@ -187,8 +188,8 @@ MiMultifunctionAirMonitor.prototype = {
             .getCharacteristic(Characteristic.CurrentRelativeHumidity)
             .setProps({minValue: 0, maxValue: 100})
             .on("get", function (callback) {
-                that.device.call("get_air_data", []).then(result => {
-                    that.log.debug("[MiMultifunctionAirMonitor][DEBUG]- getState: " + result);
+                that.device.call("get_air_data", [], that.options).then(result => {
+                    that.log.debug("[MiMultifunctionAirMonitor][DEBUG] getState: " + JSON.stringify(result));
 
                     let humidity = result['humidity'];
                     callback(null, humidity);
@@ -205,7 +206,7 @@ MiMultifunctionAirMonitor.prototype = {
         const batLevelCharacteristic = batteryService.getCharacteristic(Characteristic.BatteryLevel);
         batLevelCharacteristic
             .on('get', function (callback) {
-                that.device.call("get_value", ["battery"]).then(result => {
+                that.device.call("get_value", ["battery"], that.options).then(result => {
                     that.log.debug("[MiMultifunctionAirMonitor][DEBUG] - Battery - getLevel: " + result['battery']);
                     batLowCharacteristic.updateValue(result['battery'] < 20 ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
                     callback(null, result['battery']);
